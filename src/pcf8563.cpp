@@ -118,8 +118,8 @@ void PCF8563_Class::enableAlarm()
 {
     _readByte(PCF8563_STAT2_REG, 1, _data);
     _data[0] &= ~PCF8563_ALARM_AF;
-    _data[0] |= PCF8563_TIMER_TF | PCF8563_ALARM_AIE;
-    _readByte(PCF8563_STAT2_REG, 1, _data);
+    _data[0] |= (PCF8563_TIMER_TF | PCF8563_ALARM_AIE);
+    _writeByte(PCF8563_STAT2_REG, 1, _data);
 }
 
 void PCF8563_Class::disableAlarm()
@@ -127,7 +127,7 @@ void PCF8563_Class::disableAlarm()
     _readByte(PCF8563_STAT2_REG, 1, _data);
     _data[0] &= ~(PCF8563_ALARM_AF | PCF8563_ALARM_AIE);
     _data[0] |= PCF8563_TIMER_TF;
-    _readByte(PCF8563_STAT2_REG, 1, _data);
+    _writeByte(PCF8563_STAT2_REG, 1, _data);
 }
 
 void PCF8563_Class::resetAlarm()
@@ -135,8 +135,7 @@ void PCF8563_Class::resetAlarm()
     _readByte(PCF8563_STAT2_REG, 1, _data);
     _data[0] &= ~(PCF8563_ALARM_AF);
     _data[0] |= PCF8563_TIMER_TF;
-    _readByte(PCF8563_STAT2_REG, 1, _data);
-
+    _writeByte(PCF8563_STAT2_REG, 1, _data);
 }
 
 bool PCF8563_Class::alarmActive()
@@ -152,14 +151,15 @@ void PCF8563_Class::setAlarm(RTC_Alarm alarm)
 
 void PCF8563_Class::setAlarm(uint8_t hour, uint8_t minute, uint8_t day, uint8_t weekday)
 {
-    if (hour != PCF8563_NO_ALARM) {
-        _data[0] = _dec_to_bcd(constrain(hour, 0, 23));
+    if (minute != PCF8563_NO_ALARM) {
+        _data[0] = _dec_to_bcd(constrain(minute, 0, 59));
         _data[0] &= ~PCF8563_ALARM_ENABLE;
     } else {
         _data[0] = PCF8563_ALARM_ENABLE;
     }
-    if (minute != PCF8563_NO_ALARM) {
-        _data[1] = _dec_to_bcd(constrain(minute, 0, 59));
+
+    if (hour != PCF8563_NO_ALARM) {
+        _data[1] = _dec_to_bcd(constrain(hour, 0, 23));
         _data[1] &= ~PCF8563_ALARM_ENABLE;
     } else {
         _data[1] = PCF8563_ALARM_ENABLE;
@@ -321,4 +321,11 @@ RTC_Alarm::RTC_Alarm(
 ): minute(m), hour(h), day(d), weekday(w)
 {
 
+}
+
+
+uint8_t PCF8563_Class::status2()
+{
+    _readByte(PCF8563_STAT2_REG, 1, _data);
+    return _data[0];
 }

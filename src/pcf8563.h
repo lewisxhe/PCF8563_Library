@@ -160,6 +160,7 @@ public:
 
     const char *formatDateTime(uint8_t sytle = PCF_TIMEFORMAT_HMS);
     uint32_t getDayOfWeek(uint32_t day, uint32_t month, uint32_t year);
+    uint8_t status2();
 
 private:
     uint8_t _bcd_to_dec(uint8_t val)
