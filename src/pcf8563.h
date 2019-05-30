@@ -90,7 +90,7 @@ enum {
 class RTC_Date
 {
 public:
-    RTC_Date(void);
+    RTC_Date();
     RTC_Date(uint16_t year,
              uint8_t month,
              uint8_t day,
@@ -104,6 +104,7 @@ public:
     uint8_t hour;
     uint8_t minute;
     uint8_t second;
+    bool operator==(RTC_Date d);
 };
 
 class RTC_Alarm
@@ -142,6 +143,7 @@ public:
     void resetAlarm();
     void setAlarm(RTC_Alarm alarm);
     void setAlarm(uint8_t hour, uint8_t minute, uint8_t day, uint8_t weekday);
+    bool isVaild();
 
     void setAlarmByWeekDay(uint8_t weekday);
     void setAlarmByHours(uint8_t hour);
@@ -191,7 +193,7 @@ private:
         _i2cPort->endTransmission();
     }
 
-
+    uint8_t _isVaild = false;
     uint8_t _address;
     bool _init = false;
     TwoWire *_i2cPort;

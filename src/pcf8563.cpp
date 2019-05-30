@@ -77,12 +77,17 @@ void PCF8563_Class::setDateTime(uint16_t year,
     _writeByte(PCF8563_SEC_REG, 7, _data);
 }
 
+bool PCF8563_Class::isVaild()
+{
+    _readByte(PCF8563_SEC_REG, 1, &_isVaild);
+    return !(_isVaild  & (1 << 7));
+}
 
 RTC_Date PCF8563_Class::getDateTime()
 {
-    _readByte(PCF8563_SEC_REG, 7, _data);
     uint16_t year;
     uint8_t cetury = 0;
+    _readByte(PCF8563_SEC_REG, 7, _data);
     _voltageLow = (_data[0] & PCF8563_VOL_LOW_MASK);
     _data[0] = _bcd_to_dec(_data[0] & (~PCF8563_VOL_LOW_MASK));
     _data[1] = _bcd_to_dec(_data[1] & PCF8563_minuteS_MASK);
@@ -302,6 +307,13 @@ const char *PCF8563_Class::formatDateTime(uint8_t sytle)
     return format;
 }
 
+RTC_Date::RTC_Date(
+) : year(0), month(0), day(0), hour(0), minute(0), second(0)
+{
+
+}
+
+
 RTC_Date::RTC_Date(uint16_t y,
                    uint8_t m,
                    uint8_t d,
@@ -328,4 +340,10 @@ uint8_t PCF8563_Class::status2()
 {
     _readByte(PCF8563_STAT2_REG, 1, _data);
     return _data[0];
+}
+
+
+bool RTC_Date::operator==(RTC_Date d)
+{
+    return ((d.year == year) && (d.month == month) && (d.day == day) && (d.hour == hour) &&  (d.minute == minute));
 }
