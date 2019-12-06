@@ -27,7 +27,7 @@ Created by Lewis he on April 1, 2019.
 github:https://github.com/lewisxhe/PCF8563_Library
 */
 /////////////////////////////////////////////////////////////////
-#pragma onec
+#pragma once
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -91,6 +91,7 @@ class RTC_Date
 {
 public:
     RTC_Date();
+    RTC_Date(const char *date, const char *time);
     RTC_Date(uint16_t year,
              uint8_t month,
              uint8_t day,
@@ -105,7 +106,10 @@ public:
     uint8_t minute;
     uint8_t second;
     bool operator==(RTC_Date d);
+private:
+    uint8_t StringToUint8(const char *pString);
 };
+
 
 class RTC_Alarm
 {
@@ -117,9 +121,9 @@ public:
         uint8_t day,
         uint8_t weekday
     );
-    uint8_t day;
-    uint8_t hour;
     uint8_t minute;
+    uint8_t hour;
+    uint8_t day;
     uint8_t weekday;
 };
 
@@ -128,12 +132,16 @@ class PCF8563_Class
 {
 public:
     int begin(TwoWire &port = Wire, uint8_t addr = PCF8563_SLAVE_ADDRESS);
+
+    void check();
+
     void setDateTime(uint16_t year,
                      uint8_t month,
                      uint8_t day,
                      uint8_t hour,
                      uint8_t minute,
                      uint8_t second);
+
     void setDateTime(RTC_Date date);
     RTC_Date getDateTime();
     RTC_Alarm getAlarm();
@@ -157,8 +165,12 @@ public:
     void setTimer(uint8_t val, uint8_t freq, bool enIntrrupt);
     void clearTimer();
 
+
     bool enableCLK(uint8_t freq);
     void disableCLK();
+
+    void syncToSystem();
+    void syncToRtc();
 
     const char *formatDateTime(uint8_t sytle = PCF_TIMEFORMAT_HMS);
     uint32_t getDayOfWeek(uint32_t day, uint32_t month, uint32_t year);
