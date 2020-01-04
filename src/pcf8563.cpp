@@ -35,6 +35,7 @@ int PCF8563_Class::begin(TwoWire &port, uint8_t addr)
 {
     _i2cPort = &port;
     _address = addr;
+    return 0;
 }
 
 
