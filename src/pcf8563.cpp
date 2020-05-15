@@ -49,7 +49,6 @@ void PCF8563_Class::check()
             (now.year == compiled.year && now.month < compiled.month ) ||
             (now.year == compiled.year && now.month == compiled.month && now.day < compiled.day)) {
         setDateTime(compiled);
-        log_i("reset rtc date time");
     }
 }
 
@@ -326,12 +325,12 @@ const char *PCF8563_Class::formatDateTime(uint8_t sytle)
 }
 
 
+#ifdef ESP32
 void PCF8563_Class::syncToSystem()
 {
     struct tm t_tm;
     struct timeval val;
     RTC_Date dt = getDateTime();
-    log_i("syncToSystem: %d %d %d - %d %d %d \n",  dt.year, dt.month, dt.day,  dt.hour, dt.minute, dt.second);
     t_tm.tm_hour = dt.hour;
     t_tm.tm_min = dt.minute;
     t_tm.tm_sec = dt.second;
@@ -341,8 +340,8 @@ void PCF8563_Class::syncToSystem()
     val.tv_sec = mktime(&t_tm);
     val.tv_usec = 0;
     settimeofday(&val, NULL);
-    log_i("syncToSystem: %d %d %d - %d %d %d \n", t_tm.tm_year, t_tm.tm_mon + 1, t_tm.tm_mday, t_tm.tm_hour, t_tm.tm_min, t_tm.tm_sec);
 }
+#endif
 
 void PCF8563_Class::syncToRtc()
 {
@@ -351,7 +350,7 @@ void PCF8563_Class::syncToRtc()
     time(&now);
     localtime_r(&now, &info);
     setDateTime(info.tm_year, info.tm_mon + 1, info.tm_mday, info.tm_hour, info.tm_min, info.tm_sec);
-    Serial.printf("syncToRtc: %d %d %d - %d %d %d \n", info.tm_year, info.tm_mon + 1, info.tm_mday, info.tm_hour, info.tm_min, info.tm_sec);
+    // Serial.printf("syncToRtc: %d %d %d - %d %d %d \n", info.tm_year, info.tm_mon + 1, info.tm_mday, info.tm_hour, info.tm_min, info.tm_sec);
 }
 
 RTC_Date::RTC_Date(

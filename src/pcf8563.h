@@ -168,8 +168,9 @@ public:
 
     bool enableCLK(uint8_t freq);
     void disableCLK();
-
+#ifdef ESP32
     void syncToSystem();
+#endif
     void syncToRtc();
 
     const char *formatDateTime(uint8_t sytle = PCF_TIMEFORMAT_HMS);
