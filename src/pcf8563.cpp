@@ -35,7 +35,8 @@ int PCF8563_Class::begin(TwoWire &port, uint8_t addr)
 {
     _i2cPort = &port;
     _address = addr;
-    return 0;
+    _i2cPort->beginTransmission(_address);
+    return (_i2cPort->endTransmission() ==  0);
 }
 
 
@@ -349,7 +350,7 @@ void PCF8563_Class::syncToRtc()
     struct tm  info;
     time(&now);
     localtime_r(&now, &info);
-    setDateTime(info.tm_year, info.tm_mon + 1, info.tm_mday, info.tm_hour, info.tm_min, info.tm_sec);
+    setDateTime(info.tm_year + 1900, info.tm_mon + 1, info.tm_mday, info.tm_hour, info.tm_min, info.tm_sec);
     // Serial.printf("syncToRtc: %d %d %d - %d %d %d \n", info.tm_year, info.tm_mon + 1, info.tm_mday, info.tm_hour, info.tm_min, info.tm_sec);
 }
 
