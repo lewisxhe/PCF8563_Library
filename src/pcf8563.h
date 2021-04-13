@@ -190,8 +190,11 @@ private:
     {
         _i2cPort->beginTransmission(_address);
         _i2cPort->write(reg);
-        _i2cPort->endTransmission();
-        _i2cPort->requestFrom(_address, nbytes);
+
+        //Adapt to HYM8563, no stop bit is sent after reading the sending register address
+        _i2cPort->endTransmission(false);
+        _i2cPort->requestFrom(_address, nbytes, true);  //HYM8563 send stopbit
+
         uint8_t index = 0;
         while (_i2cPort->available())
             data[index++] = _i2cPort->read();
