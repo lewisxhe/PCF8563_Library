@@ -88,9 +88,9 @@ void PCF8563_Class::setDateTime(uint16_t year,
     _data[6] = _dec_to_bcd(year % 100);
 
     if (2000 - year  - (year % 100)) {
-        _data[4] |= PCF8563_CENTURY_MASK;
+        _data[5] |= PCF8563_CENTURY_MASK;
     } else {
-        _data[4] &= (~PCF8563_CENTURY_MASK);
+        _data[5] &= (~PCF8563_CENTURY_MASK);
     }
     _writeByte(PCF8563_SEC_REG, 7, _data);
 }
@@ -115,7 +115,7 @@ RTC_Date PCF8563_Class::getDateTime()
     cetury = _data[5] & PCF8563_CENTURY_MASK;
     _data[5] = _bcd_to_dec(_data[5] & PCF8563_MONTH_MASK);
     year = _bcd_to_dec(_data[6]);
-    year = cetury ?  1900 + year : 2000 + year;
+    year = !cetury ?  1900 + year : 2000 + year;
     return RTC_Date(
                year,
                _data[5],
