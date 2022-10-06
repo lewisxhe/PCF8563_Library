@@ -186,14 +186,14 @@ private:
     {
         return ( (val / 10 * 16) + (val % 10) );
     }
-    int _readByte(uint8_t reg, uint8_t nbytes, uint8_t *data)
+    int _readByte(uint8_t reg, int nbytes, uint8_t *data)
     {
         _i2cPort->beginTransmission(_address);
         _i2cPort->write(reg);
 
         //Adapt to HYM8563, no stop bit is sent after reading the sending register address
         _i2cPort->endTransmission(false);
-        _i2cPort->requestFrom(_address, nbytes, true);  //HYM8563 send stopbit
+        _i2cPort->requestFrom(_address, nbytes, 1);  //HYM8563 send stopbit
 
         uint8_t index = 0;
         while (_i2cPort->available())
@@ -212,7 +212,7 @@ private:
     }
 
     uint8_t _isVaild = false;
-    uint8_t _address;
+    int _address;
     bool _init = false;
     TwoWire *_i2cPort;
     uint8_t _data[16];
